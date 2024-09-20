@@ -28,11 +28,9 @@ const EditFurnitureModal = ({ open, onClose, furniture, onUpdate }) => {
     const [address, setAddress] = useState({
         street: '',
         city: '',
-        state: '',
-        zipCode: '',
         country: ''
     });
-    const [images, setImages] = useState([]);
+    const [image, setImage] = useState('');  // Single image state
 
     useEffect(() => {
         if (furniture) {
@@ -43,28 +41,21 @@ const EditFurnitureModal = ({ open, onClose, furniture, onUpdate }) => {
             setAddress(furniture.address || {
                 street: '',
                 city: '',
-                state: '',
-                zipCode: '',
                 country: ''
             });
-            setImages(furniture.images.map(image => image.imageUrl) || []); // Set image URLs
+            setImage(furniture.image?.imageUrl || '');  // Set the image URL
         }
     }, [furniture]);
 
     const handleUpdate = async () => {
         try {
-            // Mapping images to ensure they are sent as an array of objects with imageUrl property
-            const updatedImages = images.map(image => ({
-                imageUrl: image
-            }));
-
             const requestData = {
                 title,
                 description,
                 category,
                 available,
                 address,
-                images: updatedImages, // Use updated images format
+                image: { imageUrl: image },  // Send a single image object
             };
 
             console.log("Request Data:", requestData);  // Log request data for debugging
@@ -79,18 +70,8 @@ const EditFurnitureModal = ({ open, onClose, furniture, onUpdate }) => {
             onUpdate(); // Trigger a refresh or re-fetch
             onClose();  // Close modal
         } catch (error) {
-            console.error('Error updating furniture', error.response); // Log response error for debugging
+            console.error('Error updating furniture', error.response?.data || error.message); // Better error logging
         }
-    };
-
-    const handleImageChange = (index, newUrl) => {
-        const updatedImages = [...images];
-        updatedImages[index] = newUrl;
-        setImages(updatedImages);
-    };
-
-    const addNewImageField = () => {
-        setImages([...images, '']);  // Add a new empty field for another image URL
     };
 
     return (
@@ -132,39 +113,19 @@ const EditFurnitureModal = ({ open, onClose, furniture, onUpdate }) => {
                     fullWidth
                 />
                 <TextField
-                    label="State"
-                    value={address.state}
-                    onChange={(e) => setAddress(prev => ({ ...prev, state: e.target.value }))} 
-                    fullWidth
-                />
-                <TextField
-                    label="Zip Code"
-                    value={address.zipCode}
-                    onChange={(e) => setAddress(prev => ({ ...prev, zipCode: e.target.value }))} 
-                    fullWidth
-                />
-                <TextField
                     label="Country"
                     value={address.country}
                     onChange={(e) => setAddress(prev => ({ ...prev, country: e.target.value }))} 
                     fullWidth
                 />
 
-                {/* Add fields for image URLs */}
-                {images.map((image, index) => (
-                    <TextField
-                        key={index}
-                        label={`Image URL ${index + 1}`}
-                        value={image}
-                        onChange={(e) => handleImageChange(index, e.target.value)}
-                        fullWidth
-                    />
-                ))}
-
-                {/* Button to add more image fields */}
-                <Button onClick={addNewImageField} variant="outlined">
-                    Add another image
-                </Button>
+                {/* Single field for image URL */}
+                <TextField
+                    label="Image URL"
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    fullWidth
+                />
 
                 {/* Add radio buttons for Available status */}
                 <FormControl component="fieldset">

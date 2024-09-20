@@ -1,18 +1,23 @@
-// src/component/Navbar/Navbar.jsx
 import React from 'react';
 import { Badge, IconButton, Button, Avatar } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { pink } from '@mui/material/colors';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import RequestsIcon from '@mui/icons-material/Notifications';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import LoginRegisterModal from '../RegisterLogin/LoginRegisterModal';
+import RequestsModal from '../Requests/RequestsModal'; // Import your RequestsModal
 import axios from 'axios';
 
 export const Navbar = () => {
     const { isLoggedIn, setIsLoggedIn, userName, setUserName } = useAuth();
     const [openModal, setOpenModal] = React.useState(false);
+    const [openRequestsModal, setOpenRequestsModal] = React.useState(false);
     const navigate = useNavigate();
+
+    const userId = localStorage.getItem('userId');
+    console.log('Retrieved user ID from local storage:', userId);
 
     const handleLoginClick = () => {
         setOpenModal(true);
@@ -25,6 +30,20 @@ export const Navbar = () => {
             setOpenModal(true);
         }
     };
+
+    const handleRequestsClick = () => {
+        if (isLoggedIn) {
+            const storedUser = localStorage.getItem('user'); // Retrieve the user object
+            if (storedUser) {
+                const parsedUser = JSON.parse(storedUser);  // Parse the user data
+                const userId = parsedUser.id;
+                setOpenRequestsModal(true);
+                console.log("User ID from local storage:", userId);
+            }
+        }
+    };
+
+
 
     const handleLogout = async () => {
         try {
@@ -41,17 +60,17 @@ export const Navbar = () => {
     return (
         <div className='px-5 z-50 py-[.8rem] bg-[#e91e63] lg:px-20 flex justify-between'>
             <div className='lg:mr-10 cursor-pointer flex items-center space-x-4'>
-                <li className='logo font-semibold text-gray-300 text-2x1'>
+                <li className='logo font-semibold text-gray-300 text-2xl'>
                     Furniture Reduction
                 </li>
             </div>
             <div className='flex items-center space-x-2 lg:space-x-10'>
-                <div className=''>
+                <div>
                     <IconButton>
                         <SearchIcon sx={{ fontSize: "1.5rem" }} />
                     </IconButton>
                 </div>
-                <div className=''>
+                <div>
                     {isLoggedIn ? (
                         <Avatar
                             sx={{ bgcolor: "white", color: pink.A400 }}
@@ -66,7 +85,16 @@ export const Navbar = () => {
                         </Button>
                     )}
                 </div>
-                <div className=''>
+                {isLoggedIn && (
+                    <div>
+                        <IconButton onClick={handleRequestsClick}>
+                            <Badge color="primary" badgeContent={2}>
+                                <RequestsIcon sx={{ fontSize: "1.5rem" }} />
+                            </Badge>
+                        </IconButton>
+                    </div>
+                )}
+                <div>
                     <IconButton>
                         <Badge color="primary" badgeContent={2}>
                             <ShoppingCartIcon sx={{ fontSize: "1.5rem" }} />
@@ -80,6 +108,13 @@ export const Navbar = () => {
                 setLoggedIn={setIsLoggedIn}
                 setAvatarText={setUserName}
             />
+            <RequestsModal
+                open={openRequestsModal}
+                onClose={() => setOpenRequestsModal(false)}
+                userId={JSON.parse(localStorage.getItem('user'))?.id} 
+            />
+
+
         </div>
     );
 };
