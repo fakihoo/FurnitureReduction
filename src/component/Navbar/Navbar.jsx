@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Badge, IconButton, Button, Avatar } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { pink } from '@mui/material/colors';
@@ -7,17 +7,58 @@ import RequestsIcon from '@mui/icons-material/Notifications';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import LoginRegisterModal from '../RegisterLogin/LoginRegisterModal';
-import RequestsModal from '../Requests/RequestsModal'; // Import your RequestsModal
+import RequestsModal from '../Requests/RequestsModal';
+import CartModal from '../Requests/CartModal';
 import axios from 'axios';
 
 export const Navbar = () => {
     const { isLoggedIn, setIsLoggedIn, userName, setUserName } = useAuth();
-    const [openModal, setOpenModal] = React.useState(false);
-    const [openRequestsModal, setOpenRequestsModal] = React.useState(false);
+    const [openModal, setOpenModal] = useState(false);
+    const [openRequestsModal, setOpenRequestsModal] = useState(false);
+    const [requestCount, setRequestCount] = useState(0);
+    const [openCartModal, setOpenCartModal] = useState(false);
+    const [cartCount, setCartCount] = useState(0);
+    const [reservedItems, setReservedItems] = useState([]);
     const navigate = useNavigate();
+    
+    const userId = JSON.parse(localStorage.getItem('user'))?.id;
 
-    const userId = localStorage.getItem('userId');
-    console.log('Retrieved user ID from local storage:', userId);
+    useEffect(() => {
+        if (isLoggedIn && userId) {
+            const fetchRequestCount = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:5454/api/reservations/count/${userId}`);
+                    setRequestCount(response.data);
+                } catch (error) {
+                    console.error('Error fetching request count:', error);
+                }
+            };
+            fetchRequestCount();
+        }
+    }, [isLoggedIn, userId]);
+
+    // Fetch reserved items (Cart)
+    useEffect(() => {
+        if (isLoggedIn && userId) {
+            const fetchReservedItems = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:5454/api/reservations/requester/${userId}`);
+                    setReservedItems(response.data);
+                    setCartCount(response.data.length);
+                    console.log('Fetched Reserved Items:', response.data); // Check the fetched data
+                } catch (error) {
+                    console.error('Error fetching reserved items:', error);
+                }
+            };
+
+            fetchReservedItems();
+        }
+    }, [isLoggedIn, userId]);
+
+    // Method to update cart count dynamically
+    const updateCartCount = (newCount) => {
+        setCartCount(newCount);
+    };
 
     const handleLoginClick = () => {
         setOpenModal(true);
@@ -33,17 +74,15 @@ export const Navbar = () => {
 
     const handleRequestsClick = () => {
         if (isLoggedIn) {
-            const storedUser = localStorage.getItem('user'); // Retrieve the user object
-            if (storedUser) {
-                const parsedUser = JSON.parse(storedUser);  // Parse the user data
-                const userId = parsedUser.id;
-                setOpenRequestsModal(true);
-                console.log("User ID from local storage:", userId);
-            }
+            setOpenRequestsModal(true);
         }
     };
 
-
+    const handleCartClick = () => {
+        if (isLoggedIn) {
+            setOpenCartModal(true);
+        }
+    };
 
     const handleLogout = async () => {
         try {
@@ -88,19 +127,21 @@ export const Navbar = () => {
                 {isLoggedIn && (
                     <div>
                         <IconButton onClick={handleRequestsClick}>
-                            <Badge color="primary" badgeContent={2}>
+                            <Badge color="primary" badgeContent={requestCount}>
                                 <RequestsIcon sx={{ fontSize: "1.5rem" }} />
                             </Badge>
                         </IconButton>
                     </div>
                 )}
-                <div>
-                    <IconButton>
-                        <Badge color="primary" badgeContent={2}>
-                            <ShoppingCartIcon sx={{ fontSize: "1.5rem" }} />
-                        </Badge>
-                    </IconButton>
-                </div>
+                {isLoggedIn && (
+                    <div>
+                        <IconButton onClick={handleCartClick}>
+                            <Badge color="primary" badgeContent={cartCount}>
+                                <ShoppingCartIcon sx={{ fontSize: "1.5rem" }} />
+                            </Badge>
+                        </IconButton>
+                    </div>
+                )}
             </div>
             <LoginRegisterModal
                 open={openModal}
@@ -111,12 +152,14 @@ export const Navbar = () => {
             <RequestsModal
                 open={openRequestsModal}
                 onClose={() => setOpenRequestsModal(false)}
-                userId={JSON.parse(localStorage.getItem('user'))?.id} 
+                userId={userId}
             />
-
-
+            <CartModal
+                open={openCartModal}
+                onClose={() => setOpenCartModal(false)}
+                reservedItems={reservedItems}
+                updateCartCount={updateCartCount} // Pass the update function to CartModal
+            />
         </div>
     );
 };
-
-export default Navbar;
