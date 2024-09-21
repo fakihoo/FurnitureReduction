@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Badge, IconButton, Button, Avatar } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
 import { pink } from '@mui/material/colors';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import RequestsIcon from '@mui/icons-material/Notifications';
@@ -104,11 +103,6 @@ export const Navbar = () => {
                 </li>
             </div>
             <div className='flex items-center space-x-2 lg:space-x-10'>
-                <div>
-                    <IconButton>
-                        <SearchIcon sx={{ fontSize: "1.5rem" }} />
-                    </IconButton>
-                </div>
                 <div>
                     {isLoggedIn ? (
                         <Avatar

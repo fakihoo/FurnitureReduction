@@ -9,6 +9,7 @@ const Home = () => {
     const [furnitureList, setFurnitureList] = useState([]);
     const [selectedFurniture, setSelectedFurniture] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
+    const [searchParams, setSearchParams] = useState({ name: '', category: '', city: '' });
 
     useEffect(() => {
         const fetchFurniture = async () => {
@@ -48,6 +49,29 @@ const Home = () => {
         }
     };
 
+    const handleSearchChange = (e) => {
+        const { name, value } = e.target;
+        setSearchParams((prevParams) => ({
+            ...prevParams,
+            [name]: value,
+        }));
+    };
+
+    const handleSearch = async () => {
+        try {
+            const response = await axios.get('http://localhost:5454/api/furniture/search', {
+                params: {
+                    name: searchParams.name,
+                    category: searchParams.category,
+                    city: searchParams.city,
+                },
+            });
+            setFurnitureList(response.data);
+        } catch (error) {
+            console.error('Error searching furniture:', error);
+        }
+    };
+
     return (
         <div className='pb-10'>
             <section className='banner -z-50 relative flex flex-col justify-center items-center'>
@@ -63,7 +87,41 @@ const Home = () => {
                 <MultiItemCArousel />
             </section>
             <section className='px-5 lg:px-20 pt-5'>
-                <h1 className='text-2xl font-semibold text-gray-400 pb-10'>Request from the Donater</h1>
+                <div className='flex justify-between items-center pb-10'>
+                    <h1 className='text-2xl font-semibold text-gray-400'>Request from the Donater</h1>
+                    <div className='flex space-x-3'>
+                        <input
+                            type='text'
+                            name='name'
+                            placeholder='Search by Name'
+                            value={searchParams.name}
+                            onChange={handleSearchChange}
+                            className='bg-gray-700 text-white border border-gray-500 rounded p-2 placeholder-gray-400'
+                        />
+                        <input
+                            type='text'
+                            name='category'
+                            placeholder='Search by Category'
+                            value={searchParams.category}
+                            onChange={handleSearchChange}
+                            className='bg-gray-700 text-white border border-gray-500 rounded p-2 placeholder-gray-400'
+                        />
+                        <input
+                            type='text'
+                            name='city'
+                            placeholder='Search by City'
+                            value={searchParams.city}
+                            onChange={handleSearchChange}
+                            className='bg-gray-700 text-white border border-gray-500 rounded p-2 placeholder-gray-400'
+                        />
+                        <button
+                            onClick={handleSearch}
+                            className='bg-gray-700 text-white rounded p-2 hover:bg-black transition duration-200'
+                        >
+                            Search
+                        </button>
+                    </div>
+                </div>
                 <div className='flex flex-wrap items-center justify-around gap-5'>
                     {furnitureList.map((item) => (
                         <FurnitureCard
