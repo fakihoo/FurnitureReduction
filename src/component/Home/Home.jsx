@@ -25,6 +25,7 @@ const Home = () => {
     }, []);
 
     const handleCardClick = (furniture) => {
+        console.log('Selected Furniture:', furniture); 
         setSelectedFurniture(furniture);
         setModalOpen(true);
     };
@@ -40,15 +41,22 @@ const Home = () => {
             console.error('User not logged in');
             return;
         }
-
+    
+        console.log("Selected Furniture for Reservation:", selectedFurniture);
+    
+        if (!selectedFurniture || !selectedFurniture.id) {
+            console.error('Furniture ID is undefined');
+            return;
+        }
+    
         try {
-            const response = await axios.post(`http://localhost:5454/api/reservation/request/${selectedFurniture.furnitureId}/${user.id}`);
+            const response = await axios.post(`http://localhost:5454/api/reservations/request/${selectedFurniture.id}/${user.id}`);
             console.log('Reservation successful:', response.data);
         } catch (error) {
             console.error('Error reserving furniture:', error);
         }
     };
-
+    
     const handleSearchChange = (e) => {
         const { name, value } = e.target;
         setSearchParams((prevParams) => ({
@@ -66,6 +74,7 @@ const Home = () => {
                     city: searchParams.city,
                 },
             });
+            console.log('Filtered results:', response.data);
             setFurnitureList(response.data);
         } catch (error) {
             console.error('Error searching furniture:', error);
@@ -125,14 +134,14 @@ const Home = () => {
                 <div className='flex flex-wrap items-center justify-around gap-5'>
                     {furnitureList.map((item) => (
                         <FurnitureCard
-                            key={item.furnitureId}
-                            title={item.title}
-                            description={item.description}
-                            category={item.category}
-                            available={item.available}
-                            imageUrl={item.imageUrl}
-                            onClick={() => handleCardClick(item)}
-                        />
+                        key={item.id}
+                        title={item.title}
+                        description={item.description}
+                        category={item.category}
+                        available={item.available}
+                        imageUrl={item.image?.imageUrl || item.imageUrl}
+                        onClick={() => handleCardClick(item)}
+                    />
                     ))}
                 </div>
             </section>
