@@ -37,13 +37,13 @@ const LoginRegisterModal = ({ open, onClose, setAvatarText }) => {
                 const user = response.data;
                 localStorage.setItem('user', JSON.stringify(user));
                 setIsLoggedIn(true);
-                setUserName(user.email); // Update userName to display in avatar
-                setAvatarText(user.email.charAt(0).toUpperCase()); // Use first letter of email
+                setUserName(user.email);
+                setAvatarText(user.email.charAt(0).toUpperCase());
                 setError('');
                 onClose();
             }
         } catch (error) {
-            setError("Error logging in. Please check your credentials."); // Set specific error message
+            setError("Error logging in. Please check your credentials.");
         }
     };
 

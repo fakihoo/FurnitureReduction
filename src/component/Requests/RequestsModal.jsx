@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const RequestsModal = ({ open, onClose, userId }) => {
     const [requests, setRequests] = useState([]);
-    const [statusMap, setStatusMap] = useState({}); // To track the updated statuses for each request
+    const [statusMap, setStatusMap] = useState({});
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -23,7 +23,6 @@ const RequestsModal = ({ open, onClose, userId }) => {
         fetchRequests();
     }, [userId]);
 
-    // Handle status change for a specific reservation
     const handleStatusChange = async (reservationId, newStatus) => {
         try {
             await axios.put(`http://localhost:5454/api/reservations/update-status/${reservationId}?status=${newStatus}`);
@@ -47,7 +46,6 @@ const RequestsModal = ({ open, onClose, userId }) => {
                         ) : (
                             requests.map((request) => (
                                 <div key={request.id} className="flex items-center mb-4">
-                                    {/* Image Section */}
                                     <div className="flex-shrink-0">
                                         <img
                                             src={request.furniture.image?.imageUrl || 'https://via.placeholder.com/150'}
@@ -55,15 +53,11 @@ const RequestsModal = ({ open, onClose, userId }) => {
                                             className="w-24 h-24 object-cover rounded-md"
                                         />
                                     </div>
-
-                                    {/* Text Section */}
                                     <div className="ml-4 flex-grow">
                                         <Typography variant="body1">{request.furniture.title}</Typography>
                                         <Typography variant="body2" className="text-gray-400">Requested by: {request.requester.email}</Typography>
                                         <Typography variant="body2" className="text-gray-400">Status: {statusMap[request.id] || request.status}</Typography>
                                     </div>
-
-                                    {/* Status Update Section */}
                                     <div className="ml-auto">
                                         <FormControl>
                                             <Select

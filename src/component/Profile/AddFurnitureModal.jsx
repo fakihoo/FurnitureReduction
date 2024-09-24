@@ -5,7 +5,7 @@ import axios from 'axios';
 const AddFurnitureModal = ({ open, onClose, userId, onCreate }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [category, setCategory] = useState('Furniture'); // Default category
+    const [category, setCategory] = useState('Furniture');
     const [address, setAddress] = useState({
         street: '',
         city: '',
@@ -24,8 +24,8 @@ const AddFurnitureModal = ({ open, onClose, userId, onCreate }) => {
                 image: { imageUrl }
             });
             console.log('Furniture added:', response.data);
-            onCreate(); // Call the function to refresh the furniture list
-            onClose(); // Close the modal
+            onCreate();
+            onClose();
         } catch (error) {
             console.error('Error creating furniture:', error);
         }

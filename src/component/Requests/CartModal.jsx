@@ -32,16 +32,14 @@ const CartModal = ({ open, onClose, reservedItems = [], updateCartCount }) => {
                         {reservedItems.map((reservation) => (
                             <Grid item xs={12} key={reservation.id} sx={{ borderBottom: '1px solid #e0e0e0', pb: 2, mb: 2 }}>
                                 <Grid container spacing={2}>
-                                    {/* Image */}
                                     <Grid item xs={4}>
                                         <Avatar
                                             variant="square"
-                                            src={reservation.furniture.image?.imageUrl || ''}  // Safely access the image URL
+                                            src={reservation.furniture.image?.imageUrl || ''}
                                             alt={reservation.furniture.title}
                                             sx={{ width: '100%', height: 'auto' }}
                                         />
                                     </Grid>
-                                    {/* Furniture Info */}
                                     <Grid item xs={8}>
                                         <Typography variant="subtitle1" sx={{ color: '#fff' }}>
                                             <strong>Title:</strong> {reservation.furniture.title}
@@ -50,7 +48,7 @@ const CartModal = ({ open, onClose, reservedItems = [], updateCartCount }) => {
                                             <strong>Description:</strong> {reservation.furniture.description}
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: '#fff' }}>
-                                            <strong>Owner:</strong> {reservation.owner.email} {/* Owner's email */}
+                                            <strong>Owner:</strong> {reservation.owner.email}
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: '#fff' }}>
                                             <strong>Status:</strong> {reservation.status}
@@ -58,7 +56,7 @@ const CartModal = ({ open, onClose, reservedItems = [], updateCartCount }) => {
                                         <Button 
                                             variant="outlined" 
                                             color="secondary" 
-                                            onClick={() => handleRemoveItem(reservation.id)} // Remove item
+                                            onClick={() => handleRemoveItem(reservation.id)}
                                             sx={{ mt: 1 }}
                                         >
                                             Remove

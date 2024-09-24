@@ -36,7 +36,6 @@ export const Navbar = () => {
         }
     }, [isLoggedIn, userId]);
 
-    // Fetch reserved items (Cart)
     useEffect(() => {
         if (isLoggedIn && userId) {
             const fetchReservedItems = async () => {
@@ -44,7 +43,7 @@ export const Navbar = () => {
                     const response = await axios.get(`http://localhost:5454/api/reservations/requester/${userId}`);
                     setReservedItems(response.data);
                     setCartCount(response.data.length);
-                    console.log('Fetched Reserved Items:', response.data); // Check the fetched data
+                    console.log('Fetched Reserved Items:', response.data);
                 } catch (error) {
                     console.error('Error fetching reserved items:', error);
                 }
@@ -54,7 +53,6 @@ export const Navbar = () => {
         }
     }, [isLoggedIn, userId]);
 
-    // Method to update cart count dynamically
     const updateCartCount = (newCount) => {
         setCartCount(newCount);
     };
@@ -152,7 +150,7 @@ export const Navbar = () => {
                 open={openCartModal}
                 onClose={() => setOpenCartModal(false)}
                 reservedItems={reservedItems}
-                updateCartCount={updateCartCount} // Pass the update function to CartModal
+                updateCartCount={updateCartCount}
             />
         </div>
     );

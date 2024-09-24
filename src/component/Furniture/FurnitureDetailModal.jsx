@@ -32,7 +32,6 @@ const FurnitureDetailModal = ({ open, onClose, furniture }) => {
 
     const furnitureId = furniture.id || furniture.furnitureId;
 
-        //This is done because in the filtered items didnt accept passing an object to it(address)
         let addressString;
 
         if (typeof furniture.address === 'object' && furniture.address !== null) {

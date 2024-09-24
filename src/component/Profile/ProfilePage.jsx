@@ -13,6 +13,7 @@ const ProfilePage = () => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [addModalOpen, setAddModalOpen] = useState(false);
+    const [activityData, setActivityData] = useState({ itemsDonatedCount: 0, peopleHelpedCount: 0 });
     const { userName, userEmail, setUserName, setIsLoggedIn } = useAuth();
     const navigate = useNavigate();
 
@@ -26,7 +27,7 @@ const ProfilePage = () => {
                 console.error('Error fetching user furniture', error);
             }
         } else {
-            navigate('/'); // Redirect if user doesn't exist
+            navigate('/');
         }
     };
 
@@ -72,21 +73,44 @@ const ProfilePage = () => {
         setAddModalOpen(true);
     };
 
+    const fetchUserActivity = async () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && user.id) {
+            try {
+                const response = await axios.get(`http://localhost:5454/api/auth/${user.id}/activity`);
+                setActivityData(response.data);
+            } catch (error) {
+                console.error('Error fetching user activity', error);
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetchUserFurniture();
+        fetchUserActivity();
+    }, [navigate, setUserName]);
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    
     return (
         <Box sx={{ p: 4, backgroundColor: '#121212', color: '#fff', minHeight: '100vh' }}>
             <Typography variant="h4" component="h1" gutterBottom>
                 Profile Page
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, marginBottom:'30px' }}>
                 <Avatar sx={{ bgcolor: "white", color: "#e91e63", mr: 2 }}>
                     {userName && userName.charAt(0).toUpperCase()}
                 </Avatar>
                 <Box>
-                    <Typography variant="h6">{userName || 'Guest'}</Typography>
-                    <Typography variant="body2">{userEmail || 'No Email'}</Typography>
+                    <Typography variant="h6">{user.fullName || 'Guest'}</Typography>
+                    <Typography variant="body2">{user.email || 'No Email'}</Typography>
+                </Box>
+                <Box sx={{ ml: 'auto', textAlign: 'right'}}>
+                    <Typography variant="h6" sx={{fontSize:'15px'}}>Donated Items: {activityData.itemsDonatedCount}</Typography>
+                    <Typography variant="h6" sx={{fontSize:'15px'}}>People Helped: {activityData.peopleHelpedCount}</Typography>
                 </Box>
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom:'10px', margintop:'20px'}}>
                 <Typography variant="h6" gutterBottom>
                     Your Uploaded Furniture
                 </Typography>
@@ -118,11 +142,11 @@ const ProfilePage = () => {
                                     </Box>
                                 )}
                             </CardContent>
-                            {item.image && ( // Check for single image
+                            {item.image && (
                                 <CardMedia
                                     component="img"
                                     sx={{ width: 100, height: 100, objectFit: 'contain' }}
-                                    image={item.image.imageUrl} // Adjusted for single image
+                                    image={item.image.imageUrl}
                                     alt={item.title}
                                 />
                             )}
@@ -154,7 +178,7 @@ const ProfilePage = () => {
             <AddFurnitureModal
                 open={addModalOpen}
                 onClose={() => setAddModalOpen(false)}
-                userId={JSON.parse(localStorage.getItem('user'))?.id || null} // Safe access for user ID
+                userId={JSON.parse(localStorage.getItem('user'))?.id || null}
                 onCreate={fetchUserFurniture}
             />
         </Box>

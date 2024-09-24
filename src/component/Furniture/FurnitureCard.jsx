@@ -1,4 +1,3 @@
-// src/component/Furniture/FurnitureCard.jsx
 import React from 'react';
 import { Card, Chip, Typography, Box } from '@mui/material';
 

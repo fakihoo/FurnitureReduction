@@ -30,7 +30,7 @@ const EditFurnitureModal = ({ open, onClose, furniture, onUpdate }) => {
         city: '',
         country: ''
     });
-    const [image, setImage] = useState('');  // Single image state
+    const [image, setImage] = useState(''); 
 
     useEffect(() => {
         if (furniture) {
@@ -43,7 +43,7 @@ const EditFurnitureModal = ({ open, onClose, furniture, onUpdate }) => {
                 city: '',
                 country: ''
             });
-            setImage(furniture.image?.imageUrl || '');  // Set the image URL
+            setImage(furniture.image?.imageUrl || ''); 
         }
     }, [furniture]);
 
@@ -55,22 +55,21 @@ const EditFurnitureModal = ({ open, onClose, furniture, onUpdate }) => {
                 category,
                 available,
                 address,
-                image: { imageUrl: image },  // Send a single image object
+                image: { imageUrl: image },
             };
 
-            console.log("Request Data:", requestData);  // Log request data for debugging
+            console.log("Request Data:", requestData); 
 
-            // Make PUT request to update furniture
             await axios.put(`http://localhost:5454/api/furniture/update/${furniture.id}`, requestData, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
 
-            onUpdate(); // Trigger a refresh or re-fetch
-            onClose();  // Close modal
+            onUpdate();
+            onClose(); 
         } catch (error) {
-            console.error('Error updating furniture', error.response?.data || error.message); // Better error logging
+            console.error('Error updating furniture', error.response?.data || error.message);
         }
     };
 
@@ -118,16 +117,12 @@ const EditFurnitureModal = ({ open, onClose, furniture, onUpdate }) => {
                     onChange={(e) => setAddress(prev => ({ ...prev, country: e.target.value }))} 
                     fullWidth
                 />
-
-                {/* Single field for image URL */}
                 <TextField
                     label="Image URL"
                     value={image}
                     onChange={(e) => setImage(e.target.value)}
                     fullWidth
                 />
-
-                {/* Add radio buttons for Available status */}
                 <FormControl component="fieldset">
                     <FormLabel component="legend">Available</FormLabel>
                     <RadioGroup
